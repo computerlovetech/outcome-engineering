@@ -75,7 +75,7 @@ local state.
 Update docs only when the release changes user-facing behavior:
 
 - CLI commands or flags changed
-- Product graph structure or validation changed
+- Outcome Graph structure or validation changed
 - Installation or skill behavior changed
 - Existing examples no longer match current behavior
 

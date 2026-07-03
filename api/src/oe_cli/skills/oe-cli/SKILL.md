@@ -1,11 +1,11 @@
 ---
 name: oe-cli
-description: Use this skill whenever a project uses Outcome Engineering product graphs, the `oe` CLI, the `outcome-engineering` Python package, or the user needs graph structure inspected, traced, validated, or contextualized against an Outcome Engineering server. This skill is the CLI and graph-structure operating manual; use `oe-best-practices` for product content quality, `oe-graph-audit` for method audits, and `oe-grill` for product conversations.
+description: Use this skill whenever a project uses Outcome Graphs, the `oe` CLI, the `outcome-engineering` Python package, or the user needs graph structure inspected, traced, validated, or contextualized against an Outcome Engineering server. This skill is the CLI and graph-structure operating manual; use `oe-best-practices` for product content quality, `oe-graph-audit` for method audits, and `oe-grill` for product conversations.
 ---
 
 # Outcome Engineering
 
-Use the `oe` CLI to read product graphs hosted on an Outcome Engineering
+Use the `oe` CLI to read Outcome Graphs hosted on an Outcome Engineering
 server. The Python package is `outcome-engineering`. The command is `oe`.
 
 Graphs live in a server database (not in the repo). A graph is a tree of

@@ -1,6 +1,6 @@
 ---
 name: oe-grill
-description: Use this skill when the user wants to talk through their product, product strategy, product work, product graph, roadmap direction, opportunities, solutions, assumptions, PRDs, or what to do next. Act as a relentless product questioner who uses the Outcome Engineering graph, `oe-cli`, and `oe-best-practices` to help the user clarify product intent incrementally.
+description: Use this skill when the user wants to talk through their product, product strategy, product work, Outcome Graph, roadmap direction, opportunities, solutions, assumptions, PRDs, or what to do next. Act as a relentless product questioner who uses the Outcome Engineering graph, `oe-cli`, and `oe-best-practices` to help the user clarify product intent incrementally.
 ---
 
 # OE Grill

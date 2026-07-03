@@ -1,7 +1,7 @@
 [project]
 name = "outcome-engineering"
 version = "0.1.3"
-description = "Outcome Engineering: multi-tenant product graph server, CLI, and MCP"
+description = "Outcome Engineering: multi-tenant Outcome Graph server, CLI, and MCP"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

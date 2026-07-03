@@ -248,7 +248,7 @@
 		if (visions.length) addBandLabel('vision', visionX, visionY);
 		if (strategies.length) addBandLabel('strategy', strategyX, strategyY);
 		if (icps.length) addBandLabel('ideal customer profiles', icpX, icpY);
-		if (outcomes.length) addBandLabel('product graph', [minX], ROW_H * 3);
+		if (outcomes.length) addBandLabel('Outcome Graph', [minX], ROW_H * 3);
 		visions.forEach((vision) => drawNode(vision, pos.get(vision.ref)!.x, pos.get(vision.ref)!.y));
 		strategies.forEach((strategy) => drawNode(strategy, pos.get(strategy.ref)!.x, pos.get(strategy.ref)!.y));
 		icps.forEach((icp) => drawNode(icp, pos.get(icp.ref)!.x, pos.get(icp.ref)!.y));

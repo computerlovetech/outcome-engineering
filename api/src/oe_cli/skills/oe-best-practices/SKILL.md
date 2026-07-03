@@ -1,11 +1,11 @@
 ---
 name: oe-best-practices
-description: Use this skill when creating, editing, reviewing, or classifying Outcome Engineering product graph content, especially when deciding what belongs in a vision, strategy, ICP, outcome, opportunity, solution, assumption test, or PRD.
+description: Use this skill when creating, editing, reviewing, or classifying Outcome Graph content, especially when deciding what belongs in a vision, strategy, ICP, outcome, opportunity, solution, assumption test, or PRD.
 ---
 
 # OE Best Practices
 
-Use this skill to keep Outcome Engineering product graph content semantically clean.
+Use this skill to keep Outcome Graph content semantically clean.
 
 ## Workflow
 

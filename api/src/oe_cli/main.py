@@ -16,7 +16,7 @@ from oe_cli.skill_installer import (
     parse_skills_option,
 )
 
-app = typer.Typer(help="Outcome Engineering product graph tooling.", no_args_is_help=True)
+app = typer.Typer(help="Outcome Graph tooling.", no_args_is_help=True)
 
 GRAPH_OPTION = typer.Option(..., "--graph", "-g", envvar="OE_GRAPH", help="Graph slug or id.")
 
@@ -83,7 +83,7 @@ def graphs(as_json: bool = _json_option()) -> None:
 
 @app.command("tree")
 def tree_command(graph: str = GRAPH_OPTION, as_json: bool = _json_option()) -> None:
-    """Print the product graph tree."""
+    """Print the Outcome Graph tree."""
     try:
         payload = client.get(f"/api/graphs/{graph}/tree")
     except client.ApiError as error:
@@ -180,9 +180,9 @@ def validate(graph: str = GRAPH_OPTION, as_json: bool = _json_option()) -> None:
         typer.echo(json.dumps(payload, indent=2))
         return
     if payload["valid"]:
-        typer.echo(f"OK: {graph} is a valid product graph")
+        typer.echo(f"OK: {graph} is a valid Outcome Graph")
         return
-    typer.echo(f"Invalid product graph: {graph}")
+    typer.echo(f"Invalid Outcome Graph: {graph}")
     for issue in payload["issues"]:
         typer.echo(f"- {issue['ref']}: {issue['message']}")
     raise typer.Exit(code=1)

@@ -1,6 +1,6 @@
 # Outcome Engineering
 
-A multi-tenant web app for product graphs: vision, strategy, ICPs, outcomes,
+A multi-tenant web app for Outcome Graphs: vision, strategy, ICPs, outcomes,
 opportunities, solutions, assumption tests, PRDs, and a flywheel — stored in
 Postgres and served through one FastAPI service with a SvelteKit UI, an `oe`
 CLI, and a read-only MCP server.

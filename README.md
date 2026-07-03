@@ -1,6 +1,6 @@
 # Outcome Engineering
 
-Outcome Engineering turns messy product thinking into a **product graph** that
+Outcome Engineering turns messy product thinking into an **Outcome Graph** that
 humans and agents can challenge, trace, and update: vision, strategy, ideal
 customer profiles (ICPs), outcomes, opportunities, solutions, assumption
 tests, PRDs — plus a flywheel describing the causal loop that compounds.

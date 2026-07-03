@@ -37,7 +37,7 @@
 <div class="page">
 	<h1>Outcome Engineering</h1>
 	<p class="muted">
-		Product graphs that humans and agents can trace and update: vision, strategy, ICPs, outcomes,
+		Outcome Graphs that humans and agents can trace and update: vision, strategy, ICPs, outcomes,
 		opportunities, solutions, and the flywheel that connects them.
 	</p>
 	{#if checking}

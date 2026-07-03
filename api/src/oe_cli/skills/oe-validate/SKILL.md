@@ -1,6 +1,6 @@
 ---
 name: oe-validate
-description: Use when asked to validate an Outcome Engineering product graph, explain validation errors, or fix graph structure so `oe validate` passes.
+description: Use when asked to validate an Outcome Graph, explain validation errors, or fix graph structure so `oe validate` passes.
 ---
 
 # OE Validate

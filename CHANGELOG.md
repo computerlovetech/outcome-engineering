@@ -24,8 +24,8 @@ The format follows Keep a Changelog, and this project uses semantic versioning.
 
 ### Added
 
-- Added a hosted read-only graph HTTP API for serving product graphs.
-- Added a full product graph overview to the graph UI.
+- Added a hosted read-only graph HTTP API for serving Outcome Graphs.
+- Added a full Outcome Graph overview to the graph UI.
 - Added an experimental strategy flywheel graph view.
 - Added ICP guidance to the `oe-best-practices` skill.
 
@@ -55,4 +55,4 @@ The format follows Keep a Changelog, and this project uses semantic versioning.
 
 ### Added
 
-- Initial Outcome Engineering CLI for validating, inspecting, serving, and editing repo-native product graphs.
+- Initial Outcome Engineering CLI for validating, inspecting, serving, and editing repo-native Outcome Graphs.

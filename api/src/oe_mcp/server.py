@@ -16,7 +16,7 @@ from fastmcp.server.dependencies import get_http_headers
 mcp = FastMCP(
     "outcome-engineering",
     instructions=(
-        "Read-only access to Outcome Engineering product graphs: list graphs, "
+        "Read-only access to Outcome Graphs: list graphs, "
         "inspect trees and nodes, fetch agent context, and validate graphs."
     ),
 )
@@ -57,7 +57,7 @@ def _get(path: str, params: dict | None = None) -> dict:
 
 @mcp.tool
 def list_graphs() -> dict:
-    """List the product graphs the authenticated user is a member of."""
+    """List the Outcome Graphs the authenticated user is a member of."""
     return _get("/api/graphs")
 
 
@@ -97,7 +97,7 @@ def get_trace(graph: str, selector: str) -> dict:
 
 @mcp.tool
 def validate_graph(graph: str) -> dict:
-    """Validate a graph against the product-graph rules; returns issues."""
+    """Validate a graph against the Outcome Graph rules; returns issues."""
     return _get(f"/api/graphs/{graph}/validate")
 
 

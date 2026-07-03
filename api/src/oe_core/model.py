@@ -1,4 +1,4 @@
-"""Pure domain model for the product graph.
+"""Pure domain model for the Outcome Graph.
 
 Storage-agnostic: everything here operates on in-memory snapshot objects.
 The API layer loads a GraphSnapshot from Postgres via oe_store and hands it
@@ -49,7 +49,7 @@ FLYWHEEL_KIND = "flywheel"
 
 @dataclass(frozen=True)
 class Node:
-    """A product graph node as the domain sees it."""
+    """An Outcome Graph node as the domain sees it."""
 
     id: str  # uuid string — the real identity
     kind: str

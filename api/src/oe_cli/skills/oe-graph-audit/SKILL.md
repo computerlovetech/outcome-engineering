@@ -1,11 +1,11 @@
 ---
 name: oe-graph-audit
-description: Use this skill when asked to audit, review, critique, or check an Outcome Engineering product graph for method quality, including outcome/output separation, opportunity/solution separation, known/unknown discipline, assumption-test placement, ICP fit, narrative coherence, and whether the graph tells a consistent product story.
+description: Use this skill when asked to audit, review, critique, or check an Outcome Graph for method quality, including outcome/output separation, opportunity/solution separation, known/unknown discipline, assumption-test placement, ICP fit, narrative coherence, and whether the graph tells a consistent product story.
 ---
 
 # OE Graph Audit
 
-Audit an Outcome Engineering product graph for product-thinking quality. This complements `oe validate`, which checks structure only.
+Audit an Outcome Graph for product-thinking quality. This complements `oe validate`, which checks structure only.
 
 Use `oe-cli` for graph inspection commands. Use `oe-best-practices` as the source of truth for judging node content.
 
