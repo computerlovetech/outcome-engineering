@@ -51,7 +51,11 @@ def _check_strategies(snapshot: GraphSnapshot, issues: list[ValidationIssue]) ->
 
     ordered = sorted(periods, key=lambda node: (node.starts, node.ends, node.slug))
     for index, current in enumerate(ordered):
+        assert current.starts is not None
+        assert current.ends is not None
         for other in ordered[index + 1 :]:
+            assert other.starts is not None
+            assert other.ends is not None
             if current.starts <= other.ends and other.starts <= current.ends:
                 issues.append(
                     ValidationIssue(

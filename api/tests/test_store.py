@@ -3,8 +3,6 @@ metadata; Postgres is the production target, exercised via compose)."""
 
 from __future__ import annotations
 
-import uuid
-
 import pytest
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session
@@ -76,7 +74,7 @@ def test_update_node_version_conflict(store, graph):
 
 def test_delete_cascade_flow(store, graph):
     outcome = store.create_node(graph.id, kind="outcome", slug="o", title="O", content="", parent_id=None)
-    opp = store.create_node(graph.id, kind="opportunity", slug="p", title="P", content="", parent_id=str(outcome.id))
+    store.create_node(graph.id, kind="opportunity", slug="p", title="P", content="", parent_id=str(outcome.id))
     snap = store.load_snapshot(graph.id)
     node = selector.resolve(snap, "outcome.o")
     descendants = rules.check_delete(snap, node, cascade=True)

@@ -14,7 +14,6 @@ from sqlalchemy.pool import StaticPool
 from oe_api.app import create_app
 from oe_api.settings import Settings
 from oe_store.models import Base
-from oe_store.store import GraphStore
 from sqlalchemy.orm import sessionmaker
 
 OWNER = {"Authorization": "Bearer owner"}

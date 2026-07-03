@@ -60,11 +60,11 @@ Add missing user-facing changes under standard categories:
 Run the checks that mirror the release pipeline.
 
 ```sh
+cd api
 uv run ruff check .
 uv run ty check
 uv run pytest
 uv build
-uv run oe validate product
 ```
 
 If a check fails, fix it before continuing. Do not tag a release from a failing
@@ -81,11 +81,11 @@ Update docs only when the release changes user-facing behavior:
 
 For CLI surface changes, update the bundled `oe-cli` skill:
 
-- `src/outcome_engineering/skills/oe-cli/SKILL.md`
+- `api/src/oe_cli/skills/oe-cli/SKILL.md`
 
 ## Step 4: Bump Version
 
-The package version lives in `pyproject.toml`:
+The package version lives in `api/pyproject.toml`:
 
 ```toml
 [project]
@@ -120,8 +120,8 @@ The GitHub Release job extracts the matching version section from
 Stage the release files:
 
 ```sh
-git add pyproject.toml CHANGELOG.md
-git add README.md skills src/outcome_engineering/skills docs tests
+git add api/pyproject.toml api/uv.lock CHANGELOG.md
+git add README.md skills api/src/oe_cli/skills api/tests .github/workflows
 git commit -m "release: vX.Y.Z"
 git tag vX.Y.Z
 ```
@@ -151,7 +151,7 @@ gh run watch $(gh run list --workflow=publish.yml --limit=1 --json databaseId -q
 
 The pipeline stages are:
 
-1. Quality Checks: `uv run ruff check .`, `uv run ty check`, and `uv run pytest`
+1. Quality Checks: `uv run ruff check .`, `uv run ty check`, and `uv run pytest` from `api/`
 2. Build Package: `uv build` and tag/version verification
 3. Publish to PyPI: trusted publishing through OIDC
 4. Create GitHub Release: release notes from `CHANGELOG.md`

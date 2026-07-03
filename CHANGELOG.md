@@ -6,6 +6,20 @@ The format follows Keep a Changelog, and this project uses semantic versioning.
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-07-03
+
+### Added
+
+- Released the open-source multi-tenant Outcome Engineering web app, including
+  the FastAPI API, Postgres store, SvelteKit frontend, read-only MCP server,
+  HTTP CLI, Docker Compose deployment, OIDC auth support, and bundled agent
+  skills.
+
+### Fixed
+
+- Fixed GitHub Actions release/test workflows for the new `api/` package
+  layout.
+
 ## [0.1.2] - 2026-07-01
 
 ### Added

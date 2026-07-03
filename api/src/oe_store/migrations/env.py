@@ -26,7 +26,10 @@ def run_migrations_online() -> None:
             context.run_migrations()
         return
 
-    engine = create_engine(context.config.get_main_option("sqlalchemy.url"))
+    url = context.config.get_main_option("sqlalchemy.url")
+    if url is None:
+        raise RuntimeError("Alembic sqlalchemy.url is not configured")
+    engine = create_engine(url)
     with engine.connect() as connection:
         context.configure(connection=connection, target_metadata=target_metadata)
         with context.begin_transaction():

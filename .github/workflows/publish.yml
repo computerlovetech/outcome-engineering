@@ -32,15 +32,19 @@ jobs:
         run: uv python install 3.12
 
       - name: Install dependencies
+        working-directory: api
         run: uv sync --dev
 
       - name: Run Ruff lint
+        working-directory: api
         run: uv run ruff check .
 
       - name: Run type check
+        working-directory: api
         run: uv run ty check
 
       - name: Run tests
+        working-directory: api
         run: uv run pytest
 
   build:
@@ -59,9 +63,11 @@ jobs:
         run: uv python install 3.12
 
       - name: Build package
+        working-directory: api
         run: uv build
 
       - name: Verify package version matches tag
+        working-directory: api
         if: github.event_name == 'push'
         run: |
           PKG_VERSION=$(python -c "
@@ -79,7 +85,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: dist/
+          path: api/dist/
 
   publish:
     name: Publish to PyPI
