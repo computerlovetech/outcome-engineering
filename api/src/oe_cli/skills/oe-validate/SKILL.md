@@ -15,7 +15,10 @@ Run deterministic commands first; only reason after seeing real output.
 oe validate -g <graph>
 ```
 
-2. If validation passes, report that the graph is structurally valid.
+2. If validation passes, report that the graph is structurally valid. Report
+   any warnings separately (lines prefixed `warning`): they are advisory —
+   for example an opportunity not connected to a job, or a job without an
+   ICP — and do not make the graph invalid, but say how to resolve them.
 
 3. If validation fails:
 - quote the failing command and each reported issue (node ref + message)

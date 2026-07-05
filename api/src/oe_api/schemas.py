@@ -30,6 +30,7 @@ class NodeCreate(BaseModel):
     starts: date | None = None
     ends: date | None = None
     icps: list[str] = []  # icp selectors
+    jobs: list[str] = []  # job selectors
 
 
 class NodePatch(BaseModel):
@@ -40,6 +41,7 @@ class NodePatch(BaseModel):
     starts: date | None = None
     ends: date | None = None
     icps: list[str] | None = None
+    jobs: list[str] | None = None
 
 
 class FlywheelPut(BaseModel):

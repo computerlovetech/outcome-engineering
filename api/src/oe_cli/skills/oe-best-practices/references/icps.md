@@ -2,7 +2,7 @@
 
 An ICP is the specific kind of customer, user, buyer, team, or practitioner the product is choosing to serve.
 
-ICPs describe who the graph is for. Outcomes and opportunities use ICPs to stay grounded in a real audience.
+ICPs describe who the graph is for. Jobs describe the progress those people are trying to make; keep the "who" in the ICP and the progress in its jobs. Outcomes and opportunities use ICPs to stay grounded in a real audience.
 
 Use these five rules when writing or reviewing ICPs:
 

@@ -11,7 +11,7 @@ Use these six rules when writing or reviewing outcomes:
    Say who changes: customers, users, practitioners, teams, buyers, agents, maintainers, or another specific actor.
 
 3. Connect customer value and business value.
-   The outcome should matter to the customer or user and plausibly matter to the product or business.
+   The outcome should matter to the customer or user and plausibly matter to the product or business. Referencing the jobs the outcome serves keeps the customer side concrete.
 
 4. Make it measurable without making the title a metric.
    Keep the title human-readable. Put proof in the measures, and measure impact rather than activity. Prefer both quantitative and qualitative measures: quantitative evidence shows scale or frequency, while qualitative evidence explains meaning and causality.

@@ -1,6 +1,6 @@
 ---
 name: oe-best-practices
-description: Use this skill when creating, editing, reviewing, or classifying Outcome Graph content, especially when deciding what belongs in a vision, strategy, ICP, outcome, opportunity, solution, assumption test, or PRD.
+description: Use this skill when creating, editing, reviewing, or classifying Outcome Graph content, especially when deciding what belongs in a vision, strategy, ICP, job, outcome, opportunity, solution, assumption test, or PRD.
 ---
 
 # OE Best Practices
@@ -17,6 +17,7 @@ Use this skill to keep Outcome Graph content semantically clean.
 ## References
 
 - Outcomes: read `references/outcomes.md` when working with outcome content.
+- Jobs: read `references/jobs.md` when working with job content.
 - Opportunities: read `references/opportunities.md` when working with opportunity content.
 - PRDs: read `references/prds.md` when working with product requirement document content.
 - Assumption tests: read `references/assumption-tests.md` when working with assumption test content.

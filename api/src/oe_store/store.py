@@ -23,6 +23,7 @@ from oe_store.models import (
     Graph,
     GraphMembership,
     NodeIcpRef,
+    NodeJobRef,
     NodeRow,
     ShareLink,
     User,
@@ -145,7 +146,7 @@ class GraphStore:
         rows = list(
             self.session.scalars(
                 select(NodeRow)
-                .options(selectinload(NodeRow.icp_refs))
+                .options(selectinload(NodeRow.icp_refs), selectinload(NodeRow.job_refs))
                 .where(NodeRow.graph_id == graph_id)
             )
         )
@@ -160,6 +161,7 @@ class GraphStore:
                 position=row.position,
                 version=row.version,
                 icp_ref_ids=tuple(str(ref.icp_node_id) for ref in row.icp_refs),
+                job_ref_ids=tuple(str(ref.job_node_id) for ref in row.job_refs),
                 starts=row.starts,
                 ends=row.ends,
             )
@@ -223,6 +225,7 @@ class GraphStore:
         starts: date | None = None,
         ends: date | None = None,
         icp_ref_ids: tuple[str, ...] = (),
+        job_ref_ids: tuple[str, ...] = (),
     ) -> NodeRow:
         row = NodeRow(
             graph_id=graph_id,
@@ -239,6 +242,8 @@ class GraphStore:
         self.session.flush()
         for icp_id in icp_ref_ids:
             self.session.add(NodeIcpRef(node_id=row.id, icp_node_id=uuid.UUID(icp_id)))
+        for job_id in job_ref_ids:
+            self.session.add(NodeJobRef(node_id=row.id, job_node_id=uuid.UUID(job_id)))
         self.session.flush()
         return row
 
@@ -254,6 +259,7 @@ class GraphStore:
         ends: date | None = None,
         set_dates: bool = False,
         icp_ref_ids: tuple[str, ...] | None = None,
+        job_ref_ids: tuple[str, ...] | None = None,
     ) -> NodeRow:
         if row.version != expected_version:
             raise VersionConflictError(
@@ -271,6 +277,8 @@ class GraphStore:
             row.ends = ends
         if icp_ref_ids is not None:
             row.icp_refs = [NodeIcpRef(node_id=row.id, icp_node_id=uuid.UUID(i)) for i in icp_ref_ids]
+        if job_ref_ids is not None:
+            row.job_refs = [NodeJobRef(node_id=row.id, job_node_id=uuid.UUID(i)) for i in job_ref_ids]
         row.version += 1
         self.session.flush()
         return row

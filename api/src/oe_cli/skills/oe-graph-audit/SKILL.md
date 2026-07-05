@@ -1,6 +1,6 @@
 ---
 name: oe-graph-audit
-description: Use this skill when asked to audit, review, critique, or check an Outcome Graph for method quality, including outcome/output separation, opportunity/solution separation, known/unknown discipline, assumption-test placement, ICP fit, narrative coherence, and whether the graph tells a consistent product story.
+description: Use this skill when asked to audit, review, critique, or check an Outcome Graph for method quality, including outcome/output separation, opportunity/solution separation, known/unknown discipline, assumption-test placement, ICP fit, job coverage, narrative coherence, and whether the graph tells a consistent product story.
 ---
 
 # OE Graph Audit
@@ -19,7 +19,7 @@ oe tree -g <graph>
 oe list -g <graph>
 ```
 
-2. Read the relevant node content with `oe show <ref> -g <graph>`. For a full-graph audit, read the vision, the active strategy, ICPs, outcomes, opportunities, solutions, assumption tests, and PRDs.
+2. Read the relevant node content with `oe show <ref> -g <graph>`. For a full-graph audit, read the vision, the active strategy, ICPs, jobs, outcomes, opportunities, solutions, assumption tests, and PRDs.
 
 3. Use `oe context <ref> -g <graph>` when auditing a specific node or chain.
 
@@ -30,7 +30,8 @@ oe list -g <graph>
 ## Audit Checks
 
 - Apply the relevant `oe-best-practices` reference for each node.
-- Check cross-node coherence: vision -> strategy -> ICP -> outcome -> opportunity -> solution -> assumption test / PRD should form a believable product story.
+- Check cross-node coherence: vision -> strategy -> ICP/job -> outcome -> opportunity -> solution -> assumption test / PRD should form a believable product story.
+- Check job discipline: every job names a circumstance, forces of progress, and what the customer hires today; every job references an ICP; top-level opportunities connect to a job (directly or inherited); jobs are progress statements, not tasks, aspirations, or features.
 - Flag parent/child mismatches: repetition, level jumps, contradictions, generic wording, or children that do not make the parent more actionable.
 - Distinguish structural validity from product-method quality.
 - Do not invent evidence, customers, metrics, or strategic decisions while recommending fixes.

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from oe_core.model import (
     ICP_REFERRING_KINDS,
+    JOB_REFERRING_KINDS,
     GraphSnapshot,
     Node,
     ValidationIssue,
@@ -18,6 +19,8 @@ def validate_graph(snapshot: GraphSnapshot) -> list[ValidationIssue]:
     _check_placements(snapshot, issues)
     _check_strategies(snapshot, issues)
     _check_icp_refs(snapshot, issues)
+    _check_job_refs(snapshot, issues)
+    _check_job_guidance(snapshot, issues)
     _check_flywheel(snapshot, issues)
     return issues
 
@@ -79,6 +82,40 @@ def _check_icp_refs(snapshot: GraphSnapshot, issues: list[ValidationIssue]) -> N
                 issues.append(ValidationIssue(node.ref, f"icp reference {icp_id!r} does not resolve to a node"))
             elif target.kind != "icp":
                 issues.append(ValidationIssue(node.ref, f"icp reference {target.ref} is a {target.kind}, not an icp"))
+
+
+def _check_job_refs(snapshot: GraphSnapshot, issues: list[ValidationIssue]) -> None:
+    for node in snapshot.nodes:
+        if node.job_ref_ids and node.kind not in JOB_REFERRING_KINDS:
+            allowed = ", ".join(sorted(JOB_REFERRING_KINDS))
+            issues.append(ValidationIssue(node.ref, f"{node.kind} cannot reference jobs; only {allowed} may"))
+            continue
+        for job_id in node.job_ref_ids:
+            target = snapshot.by_id(job_id)
+            if target is None:
+                issues.append(ValidationIssue(node.ref, f"job reference {job_id!r} does not resolve to a node"))
+            elif target.kind != "job":
+                issues.append(ValidationIssue(node.ref, f"job reference {target.ref} is a {target.kind}, not a job"))
+
+
+def _check_job_guidance(snapshot: GraphSnapshot, issues: list[ValidationIssue]) -> None:
+    """Advisory warnings: jobs and opportunities stay connected without blocking validity."""
+    for node in snapshot.of_kind("job"):
+        if not node.icp_ref_ids:
+            issues.append(
+                ValidationIssue(node.ref, "job does not reference any ICP; say who has this job", severity="warning")
+            )
+    for node in snapshot.of_kind("opportunity"):
+        parent = snapshot.by_id(node.parent_id) if node.parent_id is not None else None
+        if parent is not None and parent.kind == "outcome" and not snapshot.related_jobs(node):
+            issues.append(
+                ValidationIssue(
+                    node.ref,
+                    "opportunity is not connected to a job (own or inherited); "
+                    "reference the customer job whose progress it blocks",
+                    severity="warning",
+                )
+            )
 
 
 def _check_flywheel(snapshot: GraphSnapshot, issues: list[ValidationIssue]) -> None:

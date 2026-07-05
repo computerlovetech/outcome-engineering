@@ -179,12 +179,18 @@ def validate(graph: str = GRAPH_OPTION, as_json: bool = _json_option()) -> None:
     if as_json:
         typer.echo(json.dumps(payload, indent=2))
         return
+    warnings = [issue for issue in payload["issues"] if issue.get("severity") == "warning"]
+    errors = [issue for issue in payload["issues"] if issue.get("severity") != "warning"]
     if payload["valid"]:
         typer.echo(f"OK: {graph} is a valid Outcome Graph")
+        for issue in warnings:
+            typer.echo(f"- warning {issue['ref']}: {issue['message']}")
         return
     typer.echo(f"Invalid Outcome Graph: {graph}")
-    for issue in payload["issues"]:
+    for issue in errors:
         typer.echo(f"- {issue['ref']}: {issue['message']}")
+    for issue in warnings:
+        typer.echo(f"- warning {issue['ref']}: {issue['message']}")
     raise typer.Exit(code=1)
 
 

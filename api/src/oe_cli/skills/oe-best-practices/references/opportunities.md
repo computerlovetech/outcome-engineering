@@ -2,9 +2,9 @@
 
 An opportunity is a customer need, pain point, desire, or want that affects a parent outcome.
 
-Outcomes describe what changes if we succeed. Opportunities describe the customer needs, pains, desires, or wants that explain where to intervene.
+Outcomes describe what changes if we succeed. Jobs describe the progress the customer is trying to make. Opportunities describe the specific needs, pains, desires, or wants within that progress that explain where to intervene.
 
-Use these six rules when writing or reviewing opportunities:
+Use these seven rules when writing or reviewing opportunities:
 
 1. Keep it customer-shaped.
    Write the opportunity as something the customer could say or recognize. Do not write company goals disguised as customer needs.
@@ -22,4 +22,7 @@ Use these six rules when writing or reviewing opportunities:
    The opportunity should explain how addressing this customer need could drive the parent outcome.
 
 6. Structure top-level opportunities around moments in the experience.
-   For broad opportunity spaces, prefer top-level opportunities that map to distinct moments where the customer encounters the product, problem, or workflow.
+   For broad opportunity spaces, prefer top-level opportunities that map to distinct moments where the customer encounters the product, problem, or workflow. When the parent outcome references a job, use the job's steps and circumstance as those moments.
+
+7. Connect it to a job.
+   Reference the job whose progress this need blocks (directly, or inherited from a parent outcome or opportunity). A list of pains without a job is fragmented; the job gives the opportunity its strategic meaning.

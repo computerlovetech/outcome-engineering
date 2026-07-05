@@ -96,6 +96,11 @@ class NodeRow(Base):
         cascade="all, delete-orphan",
         foreign_keys="NodeIcpRef.node_id",
     )
+    job_refs: Mapped[list[NodeJobRef]] = relationship(
+        back_populates="node",
+        cascade="all, delete-orphan",
+        foreign_keys="NodeJobRef.node_id",
+    )
 
 
 class NodeIcpRef(Base):
@@ -107,6 +112,17 @@ class NodeIcpRef(Base):
     icp_node_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("nodes.id", ondelete="CASCADE"))
 
     node: Mapped[NodeRow] = relationship(back_populates="icp_refs", foreign_keys=[node_id])
+
+
+class NodeJobRef(Base):
+    __tablename__ = "node_job_refs"
+    __table_args__ = (UniqueConstraint("node_id", "job_node_id"),)
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    node_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("nodes.id", ondelete="CASCADE"))
+    job_node_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("nodes.id", ondelete="CASCADE"))
+
+    node: Mapped[NodeRow] = relationship(back_populates="job_refs", foreign_keys=[node_id])
 
 
 class FlywheelRow(Base):

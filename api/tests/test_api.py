@@ -90,7 +90,8 @@ def test_graph_delete_owner_only(client, graph):
 def test_node_lifecycle(client, graph):
     create_node(client, {"kind": "vision", "slug": "vision", "content": "# Vision\n\nWin."})
     create_node(client, {"kind": "icp", "slug": "founders"})
-    create_node(client, {"kind": "outcome", "slug": "activation", "icps": ["icp.founders"]})
+    create_node(client, {"kind": "job", "slug": "ship-fast", "icps": ["icp.founders"]})
+    create_node(client, {"kind": "outcome", "slug": "activation", "icps": ["icp.founders"], "jobs": ["job.ship-fast"]})
     create_node(client, {"kind": "opportunity", "slug": "onboarding", "under": "outcome.activation"})
     create_node(client, {"kind": "solution", "slug": "wizard", "under": "opportunity.onboarding"})
 
@@ -103,6 +104,8 @@ def test_node_lifecycle(client, graph):
     context = client.get("/api/graphs/acme/nodes/wizard/context", headers=OWNER).json()
     assert "# Context: solution.wizard" in context["markdown"]
     assert [icp["ref"] for icp in context["icps"]] == ["icp.founders"]
+    assert [job["ref"] for job in context["jobs"]] == ["job.ship-fast"]
+    assert "## Job Content" in context["markdown"]
 
     tree = client.get("/api/graphs/acme/tree", headers=OWNER).json()
     outcome = next(r for r in tree["roots"] if r["ref"] == "outcome.activation")
@@ -158,6 +161,49 @@ def test_delete_cascade_protection(client, graph):
 
 def test_validate_endpoint(client, graph):
     assert client.get("/api/graphs/acme/validate", headers=VIEWER).json() == {"valid": True, "issues": []}
+
+
+def test_validate_warnings_do_not_break_validity(client, graph):
+    create_node(client, {"kind": "outcome", "slug": "o"})
+    create_node(client, {"kind": "opportunity", "slug": "floating", "under": "outcome.o"})
+    create_node(client, {"kind": "job", "slug": "lonely"})
+    payload = client.get("/api/graphs/acme/validate", headers=VIEWER).json()
+    assert payload["valid"] is True
+    messages = {issue["ref"]: issue for issue in payload["issues"]}
+    assert messages["opportunity.floating"]["severity"] == "warning"
+    assert messages["job.lonely"]["severity"] == "warning"
+
+
+def test_job_refs_via_api(client, graph):
+    create_node(client, {"kind": "job", "slug": "ship-fast"})
+    create_node(client, {"kind": "outcome", "slug": "o"})
+
+    # jobs are set and cleared via PATCH
+    node = client.get("/api/graphs/acme/nodes/outcome.o", headers=OWNER).json()["node"]
+    patched = client.patch(
+        "/api/graphs/acme/nodes/outcome.o",
+        json={"version": node["version"], "jobs": ["job.ship-fast"]},
+        headers=EDITOR,
+    )
+    assert patched.status_code == 200 and patched.json()["node"]["jobs"] == ["job.ship-fast"]
+
+    # only outcomes and opportunities may reference jobs
+    response = client.post(
+        "/api/graphs/acme/nodes",
+        json={"kind": "icp", "slug": "devs", "jobs": ["job.ship-fast"]},
+        headers=OWNER,
+    )
+    assert response.status_code == 400 and "cannot reference jobs" in response.json()["detail"]
+
+    # a referenced job cannot be deleted
+    response = client.delete("/api/graphs/acme/nodes/job.ship-fast", headers=OWNER)
+    assert response.status_code == 409 and "referenced by" in response.json()["detail"]
+
+    # overview exposes job edges and servedBy
+    overview = client.get("/api/graphs/acme/overview", headers=OWNER).json()
+    assert {"source": "outcome.o", "target": "job.ship-fast", "type": "job"} in overview["edges"]
+    job_node = next(n for n in overview["nodes"] if n["ref"] == "job.ship-fast")
+    assert job_node["servedBy"] == ["outcome.o"]
 
 
 # --- roles ---------------------------------------------------------------------------

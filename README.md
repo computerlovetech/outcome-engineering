@@ -2,8 +2,11 @@
 
 Outcome Engineering turns messy product thinking into an **Outcome Graph** that
 humans and agents can challenge, trace, and update: vision, strategy, ideal
-customer profiles (ICPs), outcomes, opportunities, solutions, assumption
-tests, PRDs — plus a flywheel describing the causal loop that compounds.
+customer profiles (ICPs), customer jobs, outcomes, opportunities, solutions,
+assumption tests, PRDs — plus a flywheel describing the causal loop that
+compounds. Jobs (jobs-to-be-done) capture the progress a customer seeks in a
+specific circumstance; outcomes and opportunities reference them alongside
+ICPs.
 
 It is a multi-tenant web application:
 
@@ -32,7 +35,7 @@ open http://localhost:3000
 
 The stack runs in **simulation auth**: sign in with any token (e.g. `dev`) —
 each distinct token is its own dev user. Create a graph, add a vision,
-strategy, ICPs and outcomes, drill into opportunities → solutions →
+strategy, ICPs, jobs and outcomes, drill into opportunities → solutions →
 assumption tests / PRDs, add a flywheel, and share a public read-only link
 from the graph's settings page (works in an incognito window).
 

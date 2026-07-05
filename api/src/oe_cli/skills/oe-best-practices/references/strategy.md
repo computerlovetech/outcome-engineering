@@ -11,7 +11,7 @@ Use these five rules when writing or reviewing strategy content:
    Respond to a real obstacle, constraint, market condition, customer behavior, or adoption problem. Avoid generic ambition without diagnosis.
 
 3. Define the wedge.
-   Say who the strategy serves first, where the product will play, and why that focus gives the product a better chance of progress.
+   Say who the strategy serves first, where the product will play, and why that focus gives the product a better chance of progress. The sharpest wedge names an ICP and the job the product chooses to win first.
 
 4. Explain how this can win.
    Include the logic of advantage: why this approach could create customer value, business value, learning speed, differentiation, or compounding leverage.
