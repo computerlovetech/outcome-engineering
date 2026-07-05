@@ -11,13 +11,16 @@ from datetime import date
 
 from oe_core.errors import (
     CascadeRequiredError,
+    DomainError,
     IcpReferenceError,
+    JobReferenceError,
     PlacementError,
     SlugError,
     StrategyDateError,
 )
 from oe_core.model import (
     ICP_REFERRING_KINDS,
+    JOB_REFERRING_KINDS,
     NODE_KINDS,
     GraphSnapshot,
     Node,
@@ -35,6 +38,7 @@ def check_create(
     starts: date | None = None,
     ends: date | None = None,
     icp_ref_ids: tuple[str, ...] = (),
+    job_ref_ids: tuple[str, ...] = (),
 ) -> None:
     """Raise a DomainError if creating this node would violate the model."""
     if kind not in NODE_KINDS:
@@ -58,6 +62,7 @@ def check_create(
         raise StrategyDateError(f"{kind} cannot declare starts/ends; only strategy nodes have a period")
 
     check_icp_refs(snapshot, kind=kind, icp_ref_ids=icp_ref_ids)
+    check_job_refs(snapshot, kind=kind, job_ref_ids=job_ref_ids)
 
 
 def check_slug(snapshot: GraphSnapshot, *, kind: str, slug: str) -> None:
@@ -89,17 +94,41 @@ def check_strategy_dates(
 
 
 def check_icp_refs(snapshot: GraphSnapshot, *, kind: str, icp_ref_ids: tuple[str, ...]) -> None:
-    if not icp_ref_ids:
+    _check_refs(
+        snapshot, kind=kind, ref_ids=icp_ref_ids, target_kind="icp",
+        referring_kinds=ICP_REFERRING_KINDS, error=IcpReferenceError, label="ICPs", article="an icp",
+    )
+
+
+def check_job_refs(snapshot: GraphSnapshot, *, kind: str, job_ref_ids: tuple[str, ...]) -> None:
+    _check_refs(
+        snapshot, kind=kind, ref_ids=job_ref_ids, target_kind="job",
+        referring_kinds=JOB_REFERRING_KINDS, error=JobReferenceError, label="jobs", article="a job",
+    )
+
+
+def _check_refs(
+    snapshot: GraphSnapshot,
+    *,
+    kind: str,
+    ref_ids: tuple[str, ...],
+    target_kind: str,
+    referring_kinds: set[str],
+    error: type[DomainError],
+    label: str,
+    article: str,
+) -> None:
+    if not ref_ids:
         return
-    if kind not in ICP_REFERRING_KINDS:
-        allowed = ", ".join(sorted(ICP_REFERRING_KINDS))
-        raise IcpReferenceError(f"{kind} cannot reference ICPs; only {allowed} may")
-    for icp_id in icp_ref_ids:
-        target = snapshot.by_id(icp_id)
+    if kind not in referring_kinds:
+        allowed = ", ".join(sorted(referring_kinds))
+        raise error(f"{kind} cannot reference {label}; only {allowed} may")
+    for ref_id in ref_ids:
+        target = snapshot.by_id(ref_id)
         if target is None:
-            raise IcpReferenceError(f"icp reference {icp_id!r} does not resolve to a node in this graph")
-        if target.kind != "icp":
-            raise IcpReferenceError(f"icp reference {target.ref} is a {target.kind}, not an icp")
+            raise error(f"{target_kind} reference {ref_id!r} does not resolve to a node in this graph")
+        if target.kind != target_kind:
+            raise error(f"{target_kind} reference {target.ref} is a {target.kind}, not {article}")
 
 
 def check_delete(snapshot: GraphSnapshot, node: Node, *, cascade: bool) -> list[Node]:
@@ -111,8 +140,13 @@ def check_delete(snapshot: GraphSnapshot, node: Node, *, cascade: bool) -> list[
         raise CascadeRequiredError(
             f"{node.ref} has {len(descendants)} descendant(s) ({refs}{suffix}); pass cascade=true to delete them too"
         )
-    referrers = [n for n in snapshot.nodes if node.id in n.icp_ref_ids and n not in descendants and n.id != node.id]
-    if node.kind == "icp" and referrers:
-        refs = ", ".join(n.ref for n in referrers[:5])
-        raise CascadeRequiredError(f"{node.ref} is referenced by {refs}; remove those references first")
+    if node.kind in ("icp", "job"):
+        referrers = [
+            n
+            for n in snapshot.nodes
+            if node.id in (*n.icp_ref_ids, *n.job_ref_ids) and n not in descendants and n.id != node.id
+        ]
+        if referrers:
+            refs = ", ".join(n.ref for n in referrers[:5])
+            raise CascadeRequiredError(f"{node.ref} is referenced by {refs}; remove those references first")
     return descendants

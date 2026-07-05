@@ -11,17 +11,25 @@ server. The Python package is `outcome-engineering`. The command is `oe`.
 Graphs live in a server database (not in the repo). A graph is a tree of
 nodes plus an ICP collection and an optional flywheel:
 
-- Kinds: `vision`, `strategy`, `icp`, `outcome`, `opportunity`, `solution`,
-  `assumption-test`, `prd`.
+- Kinds: `vision`, `strategy`, `icp`, `job`, `outcome`, `opportunity`,
+  `solution`, `assumption-test`, `prd`.
 - Placement rules: the graph root holds vision (max one), strategies, ICPs,
-  and outcomes; outcome → opportunity; opportunity → opportunity | solution;
-  solution → assumption-test | prd. Nothing else nests.
+  jobs, and outcomes; outcome → opportunity; opportunity → opportunity |
+  solution; solution → assumption-test | prd. Nothing else nests.
 - Strategies declare `starts`/`ends` dates; periods must not overlap and
   status is derived from the dates.
 - ICPs (ideal customer profiles) are the "who". They are not part of the
   outcome → opportunity → solution trace chain; outcomes and opportunities
   reference them many-to-many, and `oe context` surfaces a node's own plus
   inherited ICPs.
+- Jobs are the progress a customer is trying to make in a specific
+  circumstance (jobs-to-be-done). Like ICPs they are durable root-level
+  context outside the trace chain: outcomes and opportunities reference them
+  many-to-many, jobs reference the ICPs who have them, and `oe context`
+  surfaces a node's own plus inherited jobs.
+- `oe validate` reports errors (structure violations, graph invalid) and
+  warnings (advisory: opportunities not connected to a job, jobs without an
+  ICP). Warnings do not make the graph invalid.
 - Assumption tests are the unified concept for the assumptions a solution
   depends on and the work to test them. They live under solutions only.
 - Node ids ("refs") are `<kind>.<slug>`. Selectors accept a ref, a bare slug

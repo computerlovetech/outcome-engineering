@@ -7,22 +7,32 @@ from oe_api.authz import GraphAccess, graph_editor, graph_viewer
 from oe_api.db import get_store
 from oe_api.schemas import NodeCreate, NodePatch
 from oe_core import rules, selector
-from oe_core.errors import IcpReferenceError, StrategyDateError
+from oe_core.errors import DomainError, IcpReferenceError, JobReferenceError, StrategyDateError
 from oe_core.model import GraphSnapshot, Node
 from oe_store.store import GraphStore
 
 router = APIRouter()
 
 
-def _resolve_icp_ids(snapshot: GraphSnapshot, icp_selectors: list[str]) -> tuple[str, ...]:
+def _resolve_ref_ids(
+    snapshot: GraphSnapshot, selectors: list[str], *, kind: str, error: type[DomainError]
+) -> tuple[str, ...]:
     ids = []
-    for sel in icp_selectors:
+    for sel in selectors:
         try:
             node = selector.resolve(snapshot, sel)
-        except Exception as error:
-            raise IcpReferenceError(f"icp reference {sel!r} does not resolve to a node in this graph") from error
+        except Exception as exc:
+            raise error(f"{kind} reference {sel!r} does not resolve to a node in this graph") from exc
         ids.append(node.id)
     return tuple(ids)
+
+
+def _resolve_icp_ids(snapshot: GraphSnapshot, icp_selectors: list[str]) -> tuple[str, ...]:
+    return _resolve_ref_ids(snapshot, icp_selectors, kind="icp", error=IcpReferenceError)
+
+
+def _resolve_job_ids(snapshot: GraphSnapshot, job_selectors: list[str]) -> tuple[str, ...]:
+    return _resolve_ref_ids(snapshot, job_selectors, kind="job", error=JobReferenceError)
 
 
 @router.get("/graphs/{graph_ref}/nodes")
@@ -45,6 +55,7 @@ def create_node(
     if body.under is not None:
         parent = selector.resolve(snapshot, body.under)
     icp_ids = _resolve_icp_ids(snapshot, body.icps)
+    job_ids = _resolve_job_ids(snapshot, body.jobs)
     rules.check_create(
         snapshot,
         kind=body.kind,
@@ -53,6 +64,7 @@ def create_node(
         starts=body.starts,
         ends=body.ends,
         icp_ref_ids=icp_ids,
+        job_ref_ids=job_ids,
     )
     title = body.title or body.slug.replace("-", " ").title()
     content = body.content or f"# {title}\n"
@@ -67,6 +79,7 @@ def create_node(
         starts=body.starts,
         ends=body.ends,
         icp_ref_ids=icp_ids,
+        job_ref_ids=job_ids,
     )
     store.session.commit()
     snapshot = store.load_snapshot(access.graph.id)
@@ -108,6 +121,11 @@ def patch_node(
         icp_ids = _resolve_icp_ids(snapshot, body.icps)
         rules.check_icp_refs(snapshot, kind=node.kind, icp_ref_ids=icp_ids)
 
+    job_ids = None
+    if body.jobs is not None:
+        job_ids = _resolve_job_ids(snapshot, body.jobs)
+        rules.check_job_refs(snapshot, kind=node.kind, job_ref_ids=job_ids)
+
     row = store.get_node_row(node.id)
     store.update_node(
         row,
@@ -119,6 +137,7 @@ def patch_node(
         ends=ends,
         set_dates=set_dates,
         icp_ref_ids=icp_ids,
+        job_ref_ids=job_ids,
     )
     store.session.commit()
     snapshot = store.load_snapshot(access.graph.id)

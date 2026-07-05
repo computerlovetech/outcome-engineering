@@ -63,6 +63,29 @@ def test_snapshot_roundtrip_with_icp_refs(store, graph):
     assert snap.related_icps(selector.resolve(snap, "opportunity.docs"))[0].ref == "icp.devs"
 
 
+def test_snapshot_roundtrip_with_job_refs(store, graph):
+    icp = store.create_node(graph.id, kind="icp", slug="devs", title="Devs", content="c", parent_id=None)
+    job = store.create_node(
+        graph.id, kind="job", slug="ship-fast", title="Ship fast", content="c",
+        parent_id=None, icp_ref_ids=(str(icp.id),),
+    )
+    outcome = store.create_node(
+        graph.id, kind="outcome", slug="adoption", title="Adoption", content="c",
+        parent_id=None, job_ref_ids=(str(job.id),),
+    )
+    store.create_node(graph.id, kind="opportunity", slug="docs", title="Docs", content="c", parent_id=str(outcome.id))
+    snap = store.load_snapshot(graph.id)
+    node = selector.resolve(snap, "outcome.adoption")
+    assert node.job_ref_ids == (str(job.id),)
+    assert selector.resolve(snap, "job.ship-fast").icp_ref_ids == (str(icp.id),)
+    assert snap.related_jobs(selector.resolve(snap, "opportunity.docs"))[0].ref == "job.ship-fast"
+
+    row = store.get_node_row(node.id)
+    store.update_node(row, expected_version=1, job_ref_ids=())
+    snap = store.load_snapshot(graph.id)
+    assert selector.resolve(snap, "outcome.adoption").job_ref_ids == ()
+
+
 def test_update_node_version_conflict(store, graph):
     row = store.create_node(graph.id, kind="outcome", slug="o", title="O", content="v1", parent_id=None)
     store.update_node(row, expected_version=1, content="v2")

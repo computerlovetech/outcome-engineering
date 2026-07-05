@@ -6,6 +6,24 @@ The format follows Keep a Changelog, and this project uses semantic versioning.
 
 ## [Unreleased]
 
+### Added
+
+- Added `job` as a root-level node kind capturing jobs-to-be-done: the
+  progress a customer is trying to make in a specific circumstance. Outcomes
+  and opportunities reference jobs many-to-many (mirroring ICP references,
+  with inheritance down the trace), jobs reference the ICPs who have them,
+  and `oe context` / the context endpoint surface related jobs and their
+  content.
+- Added a `jobs` best-practices reference (circumstance, functional/
+  emotional/social progress, forces of progress, competing alternatives) and
+  job guidance to the `oe-cli`, `oe-grill`, `oe-graph-audit`, and
+  `oe-validate` skills.
+- Added validation severities: errors break validity as before, while new
+  advisory warnings flag top-level opportunities not connected to a job and
+  jobs without an ICP.
+- Added jobs to the graph canvas: a jobs band beside ICPs, job reference
+  edges, and job pickers on outcome and opportunity editors.
+
 ## [0.1.3] - 2026-07-03
 
 ### Added

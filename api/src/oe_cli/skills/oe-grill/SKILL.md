@@ -40,6 +40,7 @@ Do not force a top-down sequence. Infer the starting node type from the conversa
 - Vision: the long-term change the product exists to create.
 - Strategy: a time-bounded focus, choices, constraints, and path to win.
 - ICP: the kind of customer, user, buyer, or team the product serves.
+- Job: the progress a customer is trying to make in a specific circumstance.
 - Outcome: a measurable change the team wants to drive.
 - Opportunity: a customer, user, market, or business problem worth addressing.
 - Solution: a proposed product change or capability.
@@ -65,6 +66,7 @@ Be direct and practical. Challenge unclear thinking, but do it to improve the gr
 When the user's thinking points to a gap, say it plainly:
 
 - "This sounds like a solution, but the opportunity behind it is not clear yet."
+- "These opportunities are floating; what job's progress do they block?"
 - "I can model this as an assumption test, but we need the parent solution first."
 - "This seems strategic enough to update the current strategy, but I would first clarify the tradeoff and time period it implies."
 - "I would not add this yet; it sounds like a passing concern rather than durable product intent."
@@ -74,6 +76,8 @@ When the user is unsure, recommend a path:
 - "I would start by modeling this as an opportunity because it describes a team pain, not a proposed feature."
 - "I would capture this as strategy, then add one outcome under it once the desired change is concrete."
 - "I would add the solution now and mark the risky assumption as the next thing to test."
+
+When grilling around a job, use the jobs-to-be-done questions: What does the customer fire to hire this? What circumstance triggers the struggle? What progress — functional, emotional, social — are they seeking? Which anxiety or habit would kill the switch? What do they hire today, including workarounds and doing nothing?
 
 ## Output Shape
 

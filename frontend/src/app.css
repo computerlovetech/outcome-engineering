@@ -12,6 +12,7 @@
 	--vision: #d96c75;
 	--strategy: #c6a15b;
 	--icp: #9a6bd3;
+	--job: #d0679d;
 	--outcome: #4f8cf7;
 	--opportunity: #2aa198;
 	--solution: #f08c35;
@@ -305,6 +306,12 @@ label.lbl {
 }
 .edge.icp {
 	stroke: var(--icp);
+	stroke-dasharray: 7 6;
+	stroke-width: 1.7;
+	opacity: 0.8;
+}
+.edge.job {
+	stroke: var(--job);
 	stroke-dasharray: 7 6;
 	stroke-width: 1.7;
 	opacity: 0.8;

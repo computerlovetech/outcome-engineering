@@ -15,6 +15,7 @@ NODE_KINDS = (
     "vision",
     "strategy",
     "icp",
+    "job",
     "outcome",
     "opportunity",
     "solution",
@@ -23,14 +24,15 @@ NODE_KINDS = (
 )
 
 # Kinds that live at the graph root (parent_id NULL).
-ROOT_KINDS = {"vision", "strategy", "icp", "outcome"}
+ROOT_KINDS = {"vision", "strategy", "icp", "job", "outcome"}
 
 # parent kind -> allowed child kinds. "root" is the graph root itself.
 PARENT_KIND_TO_CHILD_KIND: dict[str, set[str]] = {
-    "root": {"vision", "strategy", "icp", "outcome"},
+    "root": {"vision", "strategy", "icp", "job", "outcome"},
     "vision": set(),
     "strategy": set(),
     "icp": set(),
+    "job": set(),
     "outcome": {"opportunity"},
     "opportunity": {"opportunity", "solution"},
     "solution": {"assumption-test", "prd"},
@@ -39,7 +41,11 @@ PARENT_KIND_TO_CHILD_KIND: dict[str, set[str]] = {
 }
 
 # Kinds allowed to reference ICPs (many-to-many, not part of the trace chain).
-ICP_REFERRING_KINDS = {"outcome", "opportunity"}
+# Jobs reference ICPs to say who has the job.
+ICP_REFERRING_KINDS = {"outcome", "opportunity", "job"}
+
+# Kinds allowed to reference jobs (many-to-many, not part of the trace chain).
+JOB_REFERRING_KINDS = {"outcome", "opportunity"}
 
 SLUG_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
@@ -60,6 +66,7 @@ class Node:
     position: int = 0
     version: int = 1
     icp_ref_ids: tuple[str, ...] = ()  # node uuids of referenced ICPs
+    job_ref_ids: tuple[str, ...] = ()  # node uuids of referenced jobs
     starts: date | None = None  # strategy only
     ends: date | None = None  # strategy only
 
@@ -102,6 +109,7 @@ class Flywheel:
 class ValidationIssue:
     ref: str  # human-facing node ref (or "graph" for graph-level issues)
     message: str
+    severity: str = "error"  # "error" breaks validity; "warning" is advisory
 
 
 @dataclass
@@ -162,15 +170,22 @@ class GraphSnapshot:
 
     def related_icps(self, node: Node) -> list[Node]:
         """The node's own ICP references plus its ancestors', deduped in order."""
+        return self._related_refs(node, "icp", lambda n: n.icp_ref_ids)
+
+    def related_jobs(self, node: Node) -> list[Node]:
+        """The node's own job references plus its ancestors', deduped in order."""
+        return self._related_refs(node, "job", lambda n: n.job_ref_ids)
+
+    def _related_refs(self, node: Node, kind: str, refs_of) -> list[Node]:
         seen: set[str] = set()
-        icps: list[Node] = []
+        related: list[Node] = []
         for candidate in [*self.ancestors(node), node]:
-            for icp_id in candidate.icp_ref_ids:
-                icp = self._by_id.get(icp_id)
-                if icp is not None and icp.kind == "icp" and icp.id not in seen:
-                    seen.add(icp.id)
-                    icps.append(icp)
-        return icps
+            for ref_id in refs_of(candidate):
+                target = self._by_id.get(ref_id)
+                if target is not None and target.kind == kind and target.id not in seen:
+                    seen.add(target.id)
+                    related.append(target)
+        return related
 
 
 def allowed_child_kinds(parent_kind: str) -> set[str]:

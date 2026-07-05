@@ -70,7 +70,7 @@ def get_tree(graph: str) -> dict:
 @mcp.tool
 def list_nodes(graph: str, kind: str | None = None) -> dict:
     """List nodes in a graph, optionally filtered by kind (vision, strategy,
-    icp, outcome, opportunity, solution, assumption-test, prd)."""
+    icp, job, outcome, opportunity, solution, assumption-test, prd)."""
     return _get(f"/api/graphs/{graph}/nodes", params={"kind": kind} if kind else None)
 
 
@@ -84,8 +84,8 @@ def show_node(graph: str, selector: str) -> dict:
 @mcp.tool
 def get_context(graph: str, selector: str) -> str:
     """Get deterministic agent-facing markdown context for a node: vision,
-    current strategy, related ICPs, ancestor chain, the node, children, and
-    flywheel."""
+    current strategy, related ICPs and jobs, ancestor chain, the node,
+    children, and flywheel."""
     return _get(f"/api/graphs/{graph}/nodes/{selector}/context")["markdown"]
 
 

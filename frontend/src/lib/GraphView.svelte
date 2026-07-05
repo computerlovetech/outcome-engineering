@@ -17,6 +17,7 @@
 		vision: '#d96c75',
 		strategy: '#c6a15b',
 		icp: '#b07cf0',
+		job: '#d0679d',
 		outcome: '#4f8cf7',
 		opportunity: '#2bb3a3',
 		solution: '#f0913a',
@@ -47,7 +48,8 @@
 	let visions: N[] = [],
 		strategies: N[] = [],
 		outcomes: N[] = [],
-		icps: N[] = [];
+		icps: N[] = [],
+		jobs: N[] = [];
 	let flywheelByRef = new Map<string, N>();
 
 	let svg: SVGSVGElement;
@@ -72,6 +74,7 @@
 		strategies = GRAPH.nodes.filter((n: N) => n.kind === 'strategy');
 		outcomes = GRAPH.nodes.filter((n: N) => n.kind === 'outcome');
 		icps = GRAPH.nodes.filter((n: N) => n.kind === 'icp');
+		jobs = GRAPH.nodes.filter((n: N) => n.kind === 'job');
 		flywheelByRef = new Map(
 			((GRAPH.flywheel && GRAPH.flywheel.nodes) || []).map((n: N) => [n.ref, { ...n, kind: 'flywheel-node' }])
 		);
@@ -183,7 +186,7 @@
 		const my = (a.y + b.y) / 2;
 		const wobble = sketchOffset(a, b);
 		const d = `M ${a.x} ${a.y + (a.h || NODE_MIN_H) / 2} C ${a.x + wobble.a} ${my + wobble.b}, ${b.x + wobble.c} ${my - wobble.a}, ${b.x} ${b.y - (b.h || NODE_MIN_H) / 2}`;
-		return el('path', { class: 'edge' + (type === 'icp' ? ' icp' : ''), d });
+		return el('path', { class: 'edge' + (type === 'icp' || type === 'job' ? ' ' + type : ''), d });
 	}
 	function sketchOffset(a: Pos, b: Pos) {
 		const seed = Math.sin(a.x * 12.9898 + a.y * 78.233 + b.x * 37.719 + b.y * 11.131) * 43758.5453;
@@ -217,13 +220,16 @@
 		const centerX = (minX + maxX) / 2;
 		const visionX = spread(visions.length, COL_W * 1.2).map((x) => x + centerX);
 		const strategyX = spread(strategies.length, COL_W * 1.2).map((x) => x + centerX);
-		const icpX = spread(icps.length, COL_W).map((x) => x + centerX);
+		const customerRowX = spread(icps.length + jobs.length, COL_W).map((x) => x + centerX);
+		const icpX = customerRowX.slice(0, icps.length);
+		const jobX = customerRowX.slice(icps.length);
 		const visionY = 0,
 			strategyY = ROW_H * 0.95,
 			icpY = ROW_H * 1.9;
 		visions.forEach((vision, i) => pos.set(vision.ref, { x: visionX[i], y: visionY, h: nodeHeight(vision) }));
 		strategies.forEach((strategy, i) => pos.set(strategy.ref, { x: strategyX[i], y: strategyY, h: nodeHeight(strategy) }));
 		icps.forEach((icp, i) => pos.set(icp.ref, { x: icpX[i], y: icpY, h: nodeHeight(icp) }));
+		jobs.forEach((job, i) => pos.set(job.ref, { x: jobX[i], y: icpY, h: nodeHeight(job) }));
 
 		visions.forEach((vision) => {
 			const targets = strategies.length ? strategies : outcomes;
@@ -240,18 +246,22 @@
 				if (pos.has(e.source) && pos.has(e.target)) viewport.appendChild(edgePath(pos.get(e.source)!, pos.get(e.target)!, 'structural'));
 			});
 		GRAPH.edges
-			.filter((e: N) => e.type === 'icp')
+			// job → ICP references share the customer-context row; the detail panel
+			// shows them as chips instead of drawing a flat same-row edge.
+			.filter((e: N) => (e.type === 'icp' || e.type === 'job') && byRef.get(e.source)?.kind !== 'job')
 			.forEach((e: N) => {
-				if (pos.has(e.source) && pos.has(e.target)) viewport.appendChild(edgePath(pos.get(e.target)!, pos.get(e.source)!, 'icp'));
+				if (pos.has(e.source) && pos.has(e.target)) viewport.appendChild(edgePath(pos.get(e.target)!, pos.get(e.source)!, e.type));
 			});
 
 		if (visions.length) addBandLabel('vision', visionX, visionY);
 		if (strategies.length) addBandLabel('strategy', strategyX, strategyY);
 		if (icps.length) addBandLabel('ideal customer profiles', icpX, icpY);
+		if (jobs.length) addBandLabel('jobs', jobX, icpY);
 		if (outcomes.length) addBandLabel('Outcome Graph', [minX], ROW_H * 3);
 		visions.forEach((vision) => drawNode(vision, pos.get(vision.ref)!.x, pos.get(vision.ref)!.y));
 		strategies.forEach((strategy) => drawNode(strategy, pos.get(strategy.ref)!.x, pos.get(strategy.ref)!.y));
 		icps.forEach((icp) => drawNode(icp, pos.get(icp.ref)!.x, pos.get(icp.ref)!.y));
+		jobs.forEach((job) => drawNode(job, pos.get(job.ref)!.x, pos.get(job.ref)!.y));
 		outcomes.forEach((o) => drawFullGraphNode(o, pos));
 	}
 
@@ -451,8 +461,15 @@
 		addPill(d, n.kind, KIND_COLOR[n.kind]);
 		if (n.kind === 'strategy' && n.starts) addPill(d, `${n.starts} → ${n.ends}`);
 		addTitle(d, n.title, n.ref);
-		const served = n.kind === 'icp' ? n.servedBy || [] : n.icps || [];
-		addChips(d, n.kind === 'icp' ? 'Serves' : 'ICPs served', served, byRef, onNodeClick);
+		if (n.kind === 'icp' || n.kind === 'job') {
+			addChips(d, 'Serves', n.servedBy || [], byRef, onNodeClick);
+		}
+		if (n.kind === 'job') {
+			addChips(d, 'ICPs', n.icps || [], byRef, onNodeClick);
+		} else {
+			addChips(d, 'ICPs served', n.icps || [], byRef, onNodeClick);
+			addChips(d, 'Jobs', n.jobs || [], byRef, onNodeClick);
+		}
 
 		if (!readOnly) {
 			const actions = document.createElement('div');
@@ -534,6 +551,21 @@
 		parent.appendChild(lbl);
 	}
 
+	function refCheckRow(parent: HTMLElement, target: N, selected: string[]): HTMLInputElement {
+		const row = document.createElement('div');
+		row.className = 'check-row';
+		const check = document.createElement('input');
+		check.type = 'checkbox';
+		check.value = target.ref;
+		check.checked = selected.includes(target.ref);
+		const lbl = document.createElement('span');
+		lbl.textContent = target.title;
+		row.appendChild(check);
+		row.appendChild(lbl);
+		parent.appendChild(row);
+		return check;
+	}
+
 	function showEditor(n: N) {
 		const d = panelStart();
 		addTitle(d, 'Edit ' + n.title, n.ref);
@@ -564,22 +596,15 @@
 		}
 
 		const icpChecks: HTMLInputElement[] = [];
-		if ((n.kind === 'outcome' || n.kind === 'opportunity') && icps.length) {
-			labeled(ed, 'ICPs served');
-			icps.forEach((icp) => {
-				const row = document.createElement('div');
-				row.className = 'check-row';
-				const check = document.createElement('input');
-				check.type = 'checkbox';
-				check.value = icp.ref;
-				check.checked = (n.icps || []).includes(icp.ref);
-				icpChecks.push(check);
-				const lbl = document.createElement('span');
-				lbl.textContent = icp.title;
-				row.appendChild(check);
-				row.appendChild(lbl);
-				ed.appendChild(row);
-			});
+		if ((n.kind === 'outcome' || n.kind === 'opportunity' || n.kind === 'job') && icps.length) {
+			labeled(ed, n.kind === 'job' ? 'ICPs with this job' : 'ICPs served');
+			icps.forEach((icp) => icpChecks.push(refCheckRow(ed, icp, n.icps || [])));
+		}
+
+		const jobChecks: HTMLInputElement[] = [];
+		if ((n.kind === 'outcome' || n.kind === 'opportunity') && jobs.length) {
+			labeled(ed, 'Jobs');
+			jobs.forEach((job) => jobChecks.push(refCheckRow(ed, job, n.jobs || [])));
 		}
 
 		labeled(ed, 'Content (markdown)');
@@ -600,6 +625,7 @@
 			if (startsInput && startsInput.value) body.starts = startsInput.value;
 			if (endsInput && endsInput.value) body.ends = endsInput.value;
 			if (icpChecks.length) body.icps = icpChecks.filter((c) => c.checked).map((c) => c.value);
+			if (jobChecks.length) body.jobs = jobChecks.filter((c) => c.checked).map((c) => c.value);
 			const res = await apiCall('PATCH', `/api/graphs/${graphRef}/nodes/${encodeURIComponent(n.ref)}`, body);
 			if (res.ok) {
 				toast('Saved', 'ok');
@@ -965,6 +991,7 @@
 		{#if !readOnly}
 			<button class="btn" onclick={() => showCreateForm('outcome', null)}>+ Outcome</button>
 			<button class="btn" onclick={() => showCreateForm('icp', null)}>+ ICP</button>
+			<button class="btn" onclick={() => showCreateForm('job', null)}>+ Job</button>
 			<button class="btn" onclick={() => showCreateForm('strategy', null)}>+ Strategy</button>
 			{#if !hasVision}
 				<button class="btn" onclick={() => showCreateForm('vision', null)}>+ Vision</button>

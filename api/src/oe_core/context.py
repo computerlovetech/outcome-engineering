@@ -1,6 +1,6 @@
 """Agent-facing context assembly for a node: deterministic markdown covering
-vision, current strategy, related ICPs, the ancestor chain, the node itself,
-its children, and the flywheel."""
+vision, current strategy, related ICPs and jobs, the ancestor chain, the node
+itself, its children, and the flywheel."""
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ from oe_core.model import Flywheel, GraphSnapshot, Node
 def context_markdown(snapshot: GraphSnapshot, node: Node) -> str:
     ancestors = snapshot.ancestors(node)
     icps = snapshot.related_icps(node)
+    jobs = snapshot.related_jobs(node)
     children = snapshot.children(node)
     vision = snapshot.vision()
     strategy = snapshot.current_strategy()
@@ -20,6 +21,7 @@ def context_markdown(snapshot: GraphSnapshot, node: Node) -> str:
     lines.append(f"- {node.ref}")
 
     _append_ref_section(lines, "ICPs", icps)
+    _append_ref_section(lines, "Jobs", jobs)
     _append_ref_section(lines, "Children", children)
 
     if vision is not None and vision.id != node.id:
@@ -32,6 +34,7 @@ def context_markdown(snapshot: GraphSnapshot, node: Node) -> str:
 
     _append_content_section(lines, "Ancestor Content", ancestors)
     _append_content_section(lines, "ICP Content", icps)
+    _append_content_section(lines, "Job Content", jobs)
     lines.extend(["", "## Node Content", "", node.content.rstrip()])
     return "\n".join(lines)
 
