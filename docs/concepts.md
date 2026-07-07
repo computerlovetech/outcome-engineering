@@ -51,7 +51,7 @@ Every boundary dispute below is settled by these axes.
 | **Strategy** | What is our current bet — where do we play and how do we win, under today's constraints? | Chosen (bet) | One dated period; superseded, not edited forever | Outcomes not moving during its period | Sequential, non-overlapping periods (enforced) | Rumelt (*Good Strategy Bad Strategy*), Biddle |
 | **ICP** | Who, specifically, are we choosing to serve first? | Chosen, then confirmed | Quarters–years; sharpened by evidence | Market response: they don't buy, adopt, or struggle as described | Few per graph | Sales/marketing ICP practice; personas |
 | **Job** | What progress is that person trying to make, in what circumstance? | Discovered (fact about the world) | Years; solution-agnostic, survives pivots | Customer interviews, switch behavior | Few per graph; root-level, shared | JTBD (Christensen, Moesta, Ulwick) |
-| **Outcome** | What changed state would prove the current bet is working? | Chosen (target), then measured | One strategy cycle | Metrics: the change doesn't happen | Several per graph; root-level | Seiden (*Outcomes Over Output*), Torres |
+| **Outcome** | What changed state would prove the current bet is working? (ambiguous today between business result and influenceable behavior change — see §5.3) | Chosen (target), then measured | One strategy cycle | Metrics: the change doesn't happen | Several per graph; root-level | Seiden (*Outcomes Over Output*), Torres |
 | **Opportunity** | Which specific unmet need, pain, or desire, if addressed, would drive this outcome? | Discovered (from research) | Weeks–months; scoped to one outcome | Evidence the need isn't real, common, or causal | Many, tree-structured under outcomes | Torres (opportunity solution tree) |
 | **Solution** | What intervention might address this need, and by what mechanism? | Invented (hypothesis) | Weeks; cheap to kill | Its own assumption tests | Many per opportunity (by design) | Torres; Lean canon |
 | **Assumption test** | What is the cheapest credible way to learn whether one risky belief holds? | Instrument (produces evidence) | Days–weeks; consumed once run | N/A — it *is* the falsifier | Several per solution | Torres; Bland & Osterwalder (*Testing Business Ideas*) |
@@ -194,6 +194,20 @@ decision quality, learning, or business result) that would demonstrate the
 current strategy is working. Per Seiden, the essential discipline is
 outcome ≠ output: outputs are what gets shipped; outcomes are what changes
 because of it.
+
+**Internal fault line — business vs. product outcomes:** the current
+definition admits both a *business outcome* (a lagging business result:
+revenue, churn, retention) and a *product outcome* (a leading indicator: a
+change in customer behavior the team can directly influence). The source
+literature treats this as a load-bearing distinction, not a nuance: Torres
+requires an opportunity solution tree to be rooted at a **product** outcome,
+because opportunities are found in customer research and map to behavior
+changes, not to revenue; Seiden reserves "outcome" for the behavior change
+and calls the business result *impact*, warning against "leading by impact"
+because it is too far from what a team can influence. The model structurally
+assumes the product reading (opportunities are children of outcomes), while
+the definition permits the business reading — see §5.3 for why this is a
+defect and the options for fixing it.
 
 **Boundary with strategy:** reasoning vs. checkpoint (§3.2).
 
@@ -406,18 +420,59 @@ add-on. The alternative — encoding the boundary in required fields
 worth considering once real usage shows which prose sections actually get
 written.
 
-### 5.3 "Outcome" is defined too broadly
+### 5.3 "Outcome" conflates business and product outcomes
 
 The definition admits changed states in "behavior, usage, decision quality,
-learning, or business result." Seiden's discipline is narrower — customer
-*behavior* change that drives business results — and the breadth here has a
-cost: "the team learned X" and "revenue grew" both qualify, so the
-output/outcome firewall develops holes ("we shipped the wizard *and learned a
-lot*"). Learning goals are legitimate but they are what assumption tests
-produce, not what outcomes prove. **Recommendation:** either tighten the
-definition to observable behavior/business change, or introduce an explicit
-`type` on outcomes (behavior / business / learning) so a graph audit can flag
-learning-heavy outcome sets as a discovery smell.
+learning, or business result" — which means the concept at the root of the
+trace chain is ambiguous between two things the source literature is careful
+to keep apart:
+
+- A **business outcome** is a lagging business result (revenue, churn,
+  retention). It is what a *strategy* is ultimately judged by, but no single
+  team can directly influence it, and customer research does not decompose
+  it: pricing changes, sales hiring, and marketing spend are all valid
+  "opportunities" under it, so a tree rooted there loses coherence.
+- A **product outcome** is a leading indicator — a change in customer or user
+  behavior that a team *can* directly influence, and that customer-discovered
+  opportunities (needs, pains, desires) plausibly drive.
+
+Torres requires the opportunity solution tree to be rooted at a product
+outcome for exactly this reason; Seiden reserves "outcome" for the behavior
+change and names the business result *impact*. This framework cites both
+lineages, adopts the outcome→opportunity structure that only makes sense for
+product outcomes, yet writes a definition that permits business outcomes. A
+user who creates the outcome "ARR doubles" has followed the written rules and
+broken the structural ones — and validation cannot tell them.
+
+The "learning" and "decision quality" clauses compound the breadth problem:
+"the team learned X" is what assumption tests produce, not what outcomes
+prove, so admitting it punches holes in the output/outcome firewall ("we
+shipped the wizard *and learned a lot*").
+
+The framework does still need somewhere for business results to live —
+strategies are bets judged in business terms — so the fix is to make the
+distinction explicit, not to banish one side. Options, ranked:
+
+1. **Tighten `outcome` to product outcome** (a changed customer/user behavior
+   the team can influence) and move business results into the strategy: the
+   strategy body states the business result the bet is judged by; its
+   outcomes are the leading indicators. Cheapest fix — one reference-file
+   edit, no model change. Cost: business results become prose again,
+   unchallengeable as nodes.
+2. **Type the outcome** (`business` / `product`) and allow one level of
+   outcome→outcome nesting: business outcome → product outcomes →
+   opportunities. This is Torres' own decomposition chain, and it gives
+   validation teeth: warn when opportunities hang directly off a business
+   outcome, and when a business outcome has no product outcomes under it.
+   More model work, but it makes the distinction challengeable rather than
+   conventional — which is the framework's whole thesis. Combined with §5.1,
+   the natural shape is: strategy ↔ business outcome ↔ product outcomes.
+3. **Document-only** — keep one kind, explain the distinction in the
+   reference. Advised against: it repeats the pattern this critique keeps
+   finding, promises the edges don't keep (§6).
+
+Recommendation: option 1 now, option 2 when real graphs show business
+outcomes accumulating at the root anyway (they will).
 
 ### 5.4 A PRD can exist with zero evidence behind it
 
@@ -502,20 +557,22 @@ jobs referenced by the trace chain, and machine-enforced strategy periods —
 both survive scrutiny and improve on their sources.
 
 The honest weaknesses are of one family: **the framework's promises outrun
-its edges.** Outcomes promise to serve strategies (no edge, §5.1), PRDs
+its edges.** Outcomes promise to serve strategies (no edge, §5.1), the
+outcome definition promises a coherent root for discovery while permitting
+business results no opportunity can drive (no distinction, §5.3), PRDs
 promise validated discovery behind them (no check, §5.4), the flywheel
 promises compounding (no instrumentation, §5.5), opportunities promise
 evidence (no home for it, §5.8). None of these requires new concepts — they
-require new *relationships and advisory validations* among the concepts that
-already exist. That is the encouraging conclusion: the ontology is right; the
-connective tissue is one iteration behind it.
+require new *relationships, distinctions, and advisory validations* among the
+concepts that already exist. That is the encouraging conclusion: the ontology
+is right; the connective tissue is one iteration behind it.
 
 ---
 
 ### Sources
 
-- Teresa Torres, [Opportunity Solution Trees](https://www.producttalk.org/opportunity-solution-trees/) and *Continuous Discovery Habits* — outcome/opportunity/solution/assumption-test chain.
-- Teresa Torres, [Outcomes vs. Outputs](https://www.producttalk.org/outcomes-vs-outputs/); Josh Seiden, *Outcomes Over Output* — outcome definition.
+- Teresa Torres, [Opportunity Solution Trees](https://www.producttalk.org/opportunity-solution-trees/) and *Continuous Discovery Habits* — outcome/opportunity/solution/assumption-test chain; business vs. product outcomes (trees root at product outcomes).
+- Teresa Torres, [Outcomes vs. Outputs](https://www.producttalk.org/outcomes-vs-outputs/); Josh Seiden, *Outcomes Over Output* — outcome definition; Seiden's outcome (behavior change) vs. impact (business result) distinction.
 - Clayton Christensen / Bob Moesta / Tony Ulwick — Jobs-to-be-Done: progress, circumstance, forces, hiring.
 - Richard Rumelt, *Good Strategy Bad Strategy* — diagnosis + guiding policy + coherent action; Gibson Biddle, [DHM](https://www.gibsonbiddle.com/strategy).
 - David Bland & Alexander Osterwalder, *Testing Business Ideas*; [Strategyzer on assumptions mapping](https://www.strategyzer.com/library/how-assumptions-mapping-can-focus-your-teams-on-running-experiments-that-matter) — riskiest-assumption discipline.
